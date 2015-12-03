@@ -84,7 +84,6 @@ def main():
 	interUpToSale = defaultdict(lambda: interStat())
 
 	path = "results/scanner"
-	i = 0
 	files = sorted(listdir(path))
 
 	load()
@@ -178,9 +177,6 @@ def main():
 		for key in interUpToSale:
 			with open("results/structure/uptosale/"+str(key)+".txt", "a") as myfile:
 				interUpToSale[key].save(ID, date, start, myfile)
-		i+=1
-		print(i)
-		break
 
 if __name__ == '__main__':
 	main()
