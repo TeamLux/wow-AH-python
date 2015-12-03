@@ -11,8 +11,8 @@ class WowObject:
 		self.quantity = data["quantity"]
 		self.timeLeft = data["timeLeft"]
 		if inter != 0:
-			self.timeBegin = time-timedelta(seconds=random.randint(0,inter))
-			self.timeSell = 12 if self.timeLeft == "LONG" else None
+			self.timeBegin = time
+			self.timeSell = 12 if self.timeLeft == "LONG" else 2448
 		else:
 			self.timeBegin = None
 			self.timeSell = None
@@ -33,8 +33,10 @@ class WowObject:
 		return self
 
 	def isBuy(self,time,inter):
-		t = time-timedelta(seconds=random.randint(0,inter))
-		if self.timeLeft == "SHORT":
-			return (False,self.buyout,t) if not self.bidChange else (True,self.bid,t)
+		if inter != 0:
+			if self.timeLeft == "SHORT":
+				return (False,self.buyout) if not self.bidChange else (True,self.bid)
+			else:
+				return (self.buyout)
 		else:
-			return (self.buyout,t)
+			return None

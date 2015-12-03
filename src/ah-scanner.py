@@ -17,7 +17,7 @@ class Scanner(object):
 		datas = urllib.request.urlopen(json_res["files"][0]["url"])
 		modif = json_res["files"][0]["lastModified"]
 		if modif != self.lastModified:
-			f = open("results/"+str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))+".json","w")
+			f = open("results/scanner/"+str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))+".json","w")
 			f.write(datas.read().decode(encoding='UTF-8'))
 			f.close()
 			open("config/AH-scanner.txt","w").write(str(modif))
