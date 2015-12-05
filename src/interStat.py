@@ -37,14 +37,14 @@ class interStat:
 		return math.sqrt(som/self.n)
 
 	def save(self,ID,time,start,f):
-		avg = "None" if not self.n else str(self.avg())
-		std = "None" if not self.n else str(self.std())
-		avgb = "None" if not self.n else str(self.bidAvg())
-		stdb = "None" if not self.n else str(self.bidStd())
-		maxp = "None" if not self.prices else str(max(self.prices,key=itemgetter(0))[0])
-		minp = "None" if not self.prices else str(min(self.prices,key=itemgetter(0))[0])
-		maxb = "None" if not self.bidPrices else str(max(self.bidPrices,key=itemgetter(0))[0])
-		minb = "None" if not self.bidPrices else str(min(self.bidPrices,key=itemgetter(0))[0])
+		avg = "0" if not self.n else str(self.avg())
+		std = "0" if not self.n else str(self.std())
+		avgb = "0" if not self.n else str(self.bidAvg())
+		stdb = "0" if not self.n else str(self.bidStd())
+		maxp = "0" if not self.prices else str(max(self.prices,key=itemgetter(0))[0])
+		minp = "0" if not self.prices else str(min(self.prices,key=itemgetter(0))[0])
+		maxb = "0" if not self.bidPrices else str(max(self.bidPrices,key=itemgetter(0))[0])
+		minb = "0" if not self.bidPrices else str(min(self.bidPrices,key=itemgetter(0))[0])
 		l = [str(ID),str(int((time-start).total_seconds())),str(self.n),maxp,minp,avg,std,maxb,minb,avgb,stdb]
 		f.write("\t".join(l)+"\n")
 		self.prices = []
