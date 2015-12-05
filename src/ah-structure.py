@@ -5,15 +5,7 @@ from datetime import *
 from wowObject import *
 from collections import defaultdict
 from interStat import *
-# use datetime(year, month, day[, hour[, minute[, second[, microsecond[, tzinfo]]]]])
-# item = { 	QSale = int,
-#			QBuy = int,
-#  			inter ={Buy = {Q, MaxP, MinP, AvgP, StdP},
-#					Sale = {Q, MaxP, MinP, AvgP, StdP},
-#					upToSale={Q, MaxP, MinP, AvgP, StdP}
-#			}
-#}
-# seller = {item = {QSale, QBuy}}
+
 global n12,n24,n48,n2448,nNone,bid,buy,notBuy,sellers,items,startID,datas,date,ID
 
 def load():
@@ -64,19 +56,6 @@ def save():
 def main():
 	global n12,n24,n48,n2448,nNone,bid,buy,notBuy,sellers,items,startID,datas,date,ID
 	start = datetime(year=2015,month=11,day=1,hour=0,minute=0,second=0)
-	# n12 = 0
-	# n24 = 0
-	# n48 = 0
-	# n2448 = 0
-	# nNone = 0
-	# bid = 0
-	# buy = 0
-	# notBuy = 0
-
-	# # sellers = defaultdict(lambda :defaultdict(lambda: defaultdict(lambda :0)))
-	# # items = defaultdict(lambda: defaultdict(lambda :0))
-	# sellers = {}
-	# items = {}
 
 	interBuy = defaultdict(lambda: interStat())
 	interNotBuy = defaultdict(lambda: interStat())
@@ -88,9 +67,6 @@ def main():
 
 	load()
 
-	# f = files[0]
-	# date = datetime(year=2015,month=11,day=1,hour=0,minute=0,second=0)
-	# datas = {}
 	for f in files:
 		ID = f[:14]
 		if int(ID) <= startID:
@@ -130,7 +106,7 @@ def main():
 			interNotBuy[obj.item]
 			interSale[obj.item]
 			interUpToSale[obj.item]
-				
+
 			interSale[obj.item].add(obj.buyout,obj.bid,obj.quantity)
 
 		for auc in preDatas:
@@ -173,16 +149,14 @@ def main():
 
 		save()
 
-		for key in interBuy:
-			with open("results/structure/buy/"+str(key)+".txt", "a") as myfile:
-				interBuy[key].save(ID, date, start, myfile)
-		for key in interNotBuy:
+		for key in interSale:
+
 			with open("results/structure/notbuy/"+str(key)+".txt", "a") as myfile:
 				interNotBuy[key].save(ID, date, start, myfile)
-		for key in interSale:
+			with open("results/structure/buy/"+str(key)+".txt", "a") as myfile:
+				interBuy[key].save(ID, date, start, myfile)
 			with open("results/structure/sale/"+str(key)+".txt", "a") as myfile:
 				interSale[key].save(ID, date, start, myfile)
-		for key in interUpToSale:
 			with open("results/structure/uptosale/"+str(key)+".txt", "a") as myfile:
 				interUpToSale[key].save(ID, date, start, myfile)
 
