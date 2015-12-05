@@ -113,6 +113,7 @@ def main():
 			if(auction["auc"] not in preDatas):
 				datas[auction["auc"]] = WowObject(data = auction,time=date,inter=inter)
 				obj = datas[auction["auc"]]
+
 				sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QSale",0)
 				items.setdefault(obj.item,{}).setdefault("QSale",0)
 				sellers[obj.owner][obj.item]["QSale"] += obj.quantity
@@ -123,6 +124,13 @@ def main():
 			else:
 				datas[auction["auc"]] = preDatas[auction["auc"]].update(auction,date)
 			obj = datas[auction["auc"]]
+
+
+			interBuy[obj.item]
+			interNotBuy[obj.item]
+			interSale[obj.item]
+			interUpToSale[obj.item]
+				
 			interSale[obj.item].add(obj.buyout,obj.bid,obj.quantity)
 
 		for auc in preDatas:
