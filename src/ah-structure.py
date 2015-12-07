@@ -71,6 +71,12 @@ def main():
 		ID = f[:14]
 		if int(ID) <= startID:
 			continue
+
+		interBuy = defaultdict(lambda: interStat())
+		interNotBuy = defaultdict(lambda: interStat())
+		interSale = defaultdict(lambda: interStat())
+		interUpToSale = defaultdict(lambda: interStat())
+
 		preDate = date
 		preDatas = datas
 		date = datetime(year=int(f[0:4]),month=int(f[4:6]),day=int(f[6:8]),hour=int(f[8:10]),minute=int(f[10:12]),second=int(f[12:14]))
@@ -83,82 +89,91 @@ def main():
 		print(date)
 
 		f = open(f,"r")
-		data = json.load(f)
-		datas={}
-		for auction in data["auctions"]:
-			if(auction["auc"] not in preDatas):
-				datas[auction["auc"]] = WowObject(data = auction,time=date,inter=inter)
+		try:
+			data = json.load(f)
+			datas={}
+			for auction in data["auctions"]:
+				if(auction["auc"] not in preDatas):
+					datas[auction["auc"]] = WowObject(data = auction,time=date,inter=inter)
+					obj = datas[auction["auc"]]
+
+					sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QSale",0)
+					items.setdefault(obj.item,{}).setdefault("QSale",0)
+					sellers[obj.owner][obj.item]["QSale"] += obj.quantity
+					items[obj.item]["QSale"] += obj.quantity
+
+					if obj.timeBegin != None:
+						interUpToSale[obj.item].add(obj.buyout,obj.bid,obj.quantity)
+				else:
+					datas[auction["auc"]] = preDatas[auction["auc"]].update(auction,date)
 				obj = datas[auction["auc"]]
 
-				sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QSale",0)
-				items.setdefault(obj.item,{}).setdefault("QSale",0)
-				sellers[obj.owner][obj.item]["QSale"] += obj.quantity
-				items[obj.item]["QSale"] += obj.quantity
 
-				if obj.timeBegin != None:
-					interUpToSale[obj.item].add(obj.buyout,obj.bid,obj.quantity)
-			else:
-				datas[auction["auc"]] = preDatas[auction["auc"]].update(auction,date)
-			obj = datas[auction["auc"]]
+				interBuy[obj.item]
+				interNotBuy[obj.item]
+				interSale[obj.item]
+				interUpToSale[obj.item]
 
+				interSale[obj.item].add(obj.buyout,obj.bid,obj.quantity)
 
-			interBuy[obj.item]
-			interNotBuy[obj.item]
-			interSale[obj.item]
-			interUpToSale[obj.item]
+			for auc in preDatas:
+				if auc not in datas:
+					obj = preDatas[auc]
 
-			interSale[obj.item].add(obj.buyout,obj.bid,obj.quantity)
+					interBuy[obj.item]
+					interNotBuy[obj.item]
+					interSale[obj.item]
+					interUpToSale[obj.item]
+					
+					res = obj.isBuy(date,inter)
 
-		for auc in preDatas:
-			if auc not in datas:
-				obj = preDatas[auc]
-				res = obj.isBuy(date,inter)
-
-				if obj.timeSell == 12:
-					n12 +=1
-				elif obj.timeSell == 24:
-					n24 +=1
-				elif obj.timeSell == 48:
-					n48 +=1
-				elif obj.timeSell == 2448:
-					n2448 += 1
-				else:
-					nNone +=1
-
-				if res != None:
-					if isinstance(res,int):
-						buy += 1
-						sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QBuy",0)
-						items.setdefault(obj.item,{}).setdefault("QBuy",0)
-						sellers[obj.owner][obj.item]["QBuy"] += obj.quantity
-						items[obj.item]["QBuy"] += obj.quantity
-
-						interBuy[obj.item].add(obj.buyout,obj.bid,obj.quantity)
-					elif res[0]:
-						bid += 1
-						sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QBuy",0)
-						items.setdefault(obj.item,{}).setdefault("QBuy",0)
-						sellers[obj.owner][obj.item]["QBuy"] += obj.quantity
-						items[obj.item]["QBuy"] += obj.quantity
-
-						interBuy[obj.item].add(obj.buyout,obj.bid,obj.quantity)
+					if obj.timeSell == 12:
+						n12 +=1
+					elif obj.timeSell == 24:
+						n24 +=1
+					elif obj.timeSell == 48:
+						n48 +=1
+					elif obj.timeSell == 2448:
+						n2448 += 1
 					else:
-						notBuy += 1
-						interNotBuy[obj.item].add(obj.buyout,obj.bid,obj.quantity)
-		f.close()
+						nNone +=1
 
-		save()
+					if res != None:
+						if isinstance(res,int):
+							buy += 1
+							sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QBuy",0)
+							items.setdefault(obj.item,{}).setdefault("QBuy",0)
+							sellers[obj.owner][obj.item]["QBuy"] += obj.quantity
+							items[obj.item]["QBuy"] += obj.quantity
 
-		for key in interSale:
+							interBuy[obj.item].add(obj.buyout,obj.bid,obj.quantity)
+						elif res[0]:
+							bid += 1
+							sellers.setdefault(obj.owner, {}).setdefault(obj.item,{}).setdefault("QBuy",0)
+							items.setdefault(obj.item,{}).setdefault("QBuy",0)
+							sellers[obj.owner][obj.item]["QBuy"] += obj.quantity
+							items[obj.item]["QBuy"] += obj.quantity
 
-			with open("results/structure/notbuy/"+str(key)+".txt", "a") as myfile:
-				interNotBuy[key].save(ID, date, start, myfile)
-			with open("results/structure/buy/"+str(key)+".txt", "a") as myfile:
-				interBuy[key].save(ID, date, start, myfile)
-			with open("results/structure/sale/"+str(key)+".txt", "a") as myfile:
-				interSale[key].save(ID, date, start, myfile)
-			with open("results/structure/uptosale/"+str(key)+".txt", "a") as myfile:
-				interUpToSale[key].save(ID, date, start, myfile)
+							interBuy[obj.item].add(obj.buyout,obj.bid,obj.quantity)
+						else:
+							notBuy += 1
+							interNotBuy[obj.item].add(obj.buyout,obj.bid,obj.quantity)
+			f.close()
+
+			save()
+
+			for key in interSale:
+
+				with open("results/structure/notbuy/"+str(key)+".txt", "a") as myfile:
+					interNotBuy[key].save(ID, date, start, myfile)
+				with open("results/structure/buy/"+str(key)+".txt", "a") as myfile:
+					interBuy[key].save(ID, date, start, myfile)
+				with open("results/structure/sale/"+str(key)+".txt", "a") as myfile:
+					interSale[key].save(ID, date, start, myfile)
+				with open("results/structure/uptosale/"+str(key)+".txt", "a") as myfile:
+					interUpToSale[key].save(ID, date, start, myfile)
+		except Exception as e:
+			pass
 
 if __name__ == '__main__':
 	main()

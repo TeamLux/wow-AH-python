@@ -31,7 +31,7 @@ class WowObject:
 				self.timeSell = None
 			else :
 				f = timeBegin
-				self.timeBegin = datetime(year=int(f[0:4]),month=int(f[4:6]),day=int(f[6:8]),hour=int(f[8:10]),minute=int(f[10:12]),second=int(f[12:14]))
+				self.timeBegin = datetime(year=int(f[0:4]),month=int(f[5:7]),day=int(f[8:10]),hour=int(f[11:13]),minute=int(f[14:16]),second=int(f[17:19]))
 				self.timeSell = int(timeSell)
 
 	def update(self,data,time):
